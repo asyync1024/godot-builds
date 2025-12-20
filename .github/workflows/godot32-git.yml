@@ -52,7 +52,7 @@ jobs:
           )
 
           # core build deps and packages required. (ensure these are present)
-          pacman -S --noconfirm --needed base-devel git scons yasm setconf mold ccache "$PKG32"
+          pacman -S --noconfirm --needed base-devel git scons yasm setconf mold ccache "$PKG32[@]"
 
       - name: Create build user and set permissions
         run: |
