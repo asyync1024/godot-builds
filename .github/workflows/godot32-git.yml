@@ -81,7 +81,7 @@ jobs:
           path: /ccache
           key: ccache-godot32-git
           restore-keys: |
-            ccache-godot32-git-
+            ccache-godot32-git
 
       - name: Build package as builder
         run: |
