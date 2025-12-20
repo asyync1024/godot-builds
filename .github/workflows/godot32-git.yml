@@ -27,22 +27,9 @@ jobs:
       - name: Install build & runtime dependencies
         run: |
           set -euxo pipefail
-          # core build deps (ensure these are present)
-          pacman -S --noconfirm --needed base-devel git scons yasm setconf mold ccache
 
-          # install a broad set of lib32 runtime deps (pacman will skip ones not found)
           PKG32=(
             lib32-brotli
-            lib32-freetype2
-            lib32-libglvnd
-            lib32-libtheora
-            lib32-libvorbis
-            lib32-libwebp
-            lib32-libxcursor
-            lib32-libxi
-            lib32-libxinerama
-            lib32-libxrandr
-            lib32-pcre2
             lib32-alsa-lib
             lib32-pulseaudio
             lib32-glib2
@@ -53,7 +40,9 @@ jobs:
             lib32-openxr
             pulse-native-provider
           )
-          pacman -S --noconfirm --needed "$PKG32"
+
+          # core build deps and packages required. (ensure these are present)
+          pacman -S --noconfirm --needed base-devel git scons yasm setconf mold ccache "$PKG32"
 
       - name: Create build user and set permissions
         run: |
