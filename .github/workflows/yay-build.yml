@@ -46,7 +46,10 @@ jobs:
             lib32-alsa-lib \
             lib32-pulseaudio \
             lib32-glib2 \
-            pulse-native-provider
+            pulse-native-provider \
+            graphite \
+            libsquish \
+            openxr
           )
 
           # core build deps and packages required. (ensure these are present)
