@@ -58,22 +58,28 @@ jobs:
           useradd -m builder || true
           chown -R builder:builder "$GITHUB_WORKSPACE"
           
-      - name: Install yay-bin and AUR dependencies.
+      - name: Install AUR dependencies.
         run: |
           cd "$GITHUB_WORKSPACE"
-          su - builder -c "cd $GITHUB_WORKSPACE &&
-                          git clone 'https://aur.archlinux.org/yay-bin.git' &&
-                          cd yay-bin &&
-                          makepkg -s --noconfirm"
-          cd $GITHUB_WORKSPACE/yay-bin &&
-          pacman -U --noconfirm yay-bin*
-          su - builder -c "yay -S --noconfirm --needed lib32-graphite lib32-libsquish lib32-openxr"
+          AUR_DEPS=(
+          lib32-graphite
+          lib32-libsquish
+          lib32-openxr
+          )
+          for ${pkg} in $AUR_DEPS; do
+            su - builder -c "cd $GITHUB_WORKSPACE &&
+                            git clone 'https://aur.archlinux.org/${pkg}.git' &&
+                            cd ${pkg} &&
+                            makepkg -s --noconfirm"
+            cd $GITHUB_WORKSPACE/${pkg} &&
+            pacman -U --noconfirm ${pkg}*
+          done
 
       - name: Build package as builder
         run: |
           set -euxo pipefail
           su - builder -c "cd $GITHUB_WORKSPACE &&
-                          yay -G godot32 --noconfirm &&
+                          git clone 'https://aur.archlinux.org/godot32.git'" &&
                           cd godot32 &&
                           makepkg -s --noconfirm"
 
