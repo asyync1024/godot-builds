@@ -49,7 +49,9 @@ jobs:
             pulse-native-provider \
             graphite \
             openxr \
-            cmake
+            cmake \
+            meson \
+            
           )
 
           # core build deps and packages required. (ensure these are present)
