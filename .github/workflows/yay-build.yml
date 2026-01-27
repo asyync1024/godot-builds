@@ -48,7 +48,6 @@ jobs:
             lib32-glib2 \
             pulse-native-provider \
             graphite \
-            libsquish \
             openxr \
             cmake
           )
@@ -67,7 +66,6 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           AUR_DEPS=(
           lib32-graphite
-          lib32-libsquish
           lib32-openxr
           )
           for pkg in ${AUR_DEPS[@]}; do
