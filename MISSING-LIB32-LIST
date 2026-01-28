@@ -1,10 +1,5 @@
 The following lib32 versions are not available.
 The ! indicates that it's been removed from the PKGBUILD, note that I was not able to find libspeechd usage in the PKGBUILD, so I didn't put a ! before it.
-!ca-certificates
 !embree
-!graphite
 libspeechd
-!libsquish
 !libwslay
-!miniupnpc
-!openxr
