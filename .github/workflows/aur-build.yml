@@ -1,4 +1,4 @@
-name: Build Godot (AUR) (32-bit)
+name: Build Godot32 (AUR)
 on: workflow_dispatch
 
 jobs:
