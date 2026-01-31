@@ -1,4 +1,4 @@
-name: Build Godot32 (AUR)
+name: Build Godot32 (AUR) (GCC)
 on: workflow_dispatch
 
 jobs:
@@ -96,5 +96,5 @@ jobs:
       - name: Upload built package
         uses: actions/upload-artifact@v4
         with:
-          name: godot32-pkg
+          name: godot32-gcc-pkg
           path: "${{github.workspace}}/godot32/*.pkg.tar.zst"
