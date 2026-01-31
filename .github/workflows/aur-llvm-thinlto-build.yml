@@ -101,5 +101,5 @@ jobs:
       - name: Upload built package
         uses: actions/upload-artifact@v4
         with:
-          name: godot32-llvm-pkg
+          name: godot32-llvm-thin-pkg
           path: "${{github.workspace}}/godot32/*.pkg.tar.zst"
