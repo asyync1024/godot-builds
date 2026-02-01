@@ -19,7 +19,7 @@ depends=(brotli ca-certificates embree freetype2 graphite libglvnd libspeechd li
 optdepends=('pipewire-alsa: for audio support'
   'pulse-native-provider: for audio support')
 source=("$pkgname-$pkgver.tar.xz::https://github.com/godotengine/godot/releases/download/$pkgver-stable/$pkgname-$pkgver-stable.tar.xz"
-        "enable-sse42-toggle.patch)
+        "enable-sse42-toggle.patch")
 b2sums=('a3f40dc0ad08733fa0e5eb1044e0c8075df6147592493593e70d4742f36a9f2e22a70f655cbb083509ce45b7767008d8786f1f3d01c5ff5d35761b390134e8fd'
         'a648c9ae701cbfa2fd482e597290b84d9622d02af2326c6a55cb8319b58359b2ebf58def0ddb7c3f5ca18dbbc1a552892f9ad381aea7edec6544b99e48c06f81')
 
