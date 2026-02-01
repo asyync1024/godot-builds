@@ -1,0 +1,77 @@
+name: Build Godot 64-bit (GCC)
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Refresh mirrors and update system.
+        run: |
+          set -euxo pipefail
+          pacman-key --init || true
+          pacman-key --populate archlinux || true
+          pacman -Syu --noconfirm
+          
+      - name: Install build & runtime dependencies
+        run: |
+          set -euxo pipefail
+
+          DEPS=(
+            # Makedepends
+            alsa-lib \
+            pulse-native-provider \
+            scons \
+            setconf \
+            yasm \
+            # Depends
+            brotli \
+            ca-certificates \
+            embree \
+            freetype2 \
+            graphite \
+            libglvnd \
+            libspeechd \
+            libsquish \
+            libtheora \
+            libvorbis \
+            libwebp \
+            libwslay \
+            libxcursor \
+            libxi \
+            libxinerama \
+            libxrandr \
+            miniupnpc \
+            openxr \
+            pcre2
+          )
+
+          # core build deps and packages required. (ensure these are present)
+          pacman -S --noconfirm --needed base-devel git "${DEPS[@]}"
+
+      - name: Change package compression to -18 and disable debug in OPTIONS.
+        run: |
+          sed -i 's/^COMPRESSZST.*/COMPRESSZST=(zstd -c -18 -T0 --auto-threads=logical -)/' /etc/makepkg.conf
+          sed -i 's/^OPTIONS=.*/OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)/' /etc/makepkg.conf
+
+      - name: Create build user and set permissions
+        run: |
+          set -euxo pipefail
+          useradd -m builder || true
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Build package as builder
+        run: |
+          set -euxo pipefail
+          su - builder -c "cd $GITHUB_WORKSPACE &&
+                          makepkg --noconfirm"
+
+      - name: Upload built package
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-gcc-pkg
+          path: "${{github.workspace}}/*.pkg.tar.zst"
