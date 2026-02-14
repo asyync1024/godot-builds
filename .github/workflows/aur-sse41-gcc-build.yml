@@ -1,0 +1,106 @@
+name: Build Godot32 (AUR) (SSE4.1) (GCC)
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Enable multilib and refresh mirrors
+        run: |
+          set -euxo pipefail
+          if ! grep -q '^\[multilib\]' /etc/pacman.conf; then
+            cat >> /etc/pacman.conf <<'EOF'
+          [multilib]
+          Include = /etc/pacman.d/mirrorlist
+          EOF
+          fi
+          pacman-key --init || true
+          pacman-key --populate archlinux || true
+          pacman -Syu --noconfirm
+          
+      - name: Install build & runtime dependencies
+        run: |
+          set -euxo pipefail
+
+          PKG32=(
+            ca-certificates \
+            lib32-brotli \
+            lib32-freetype2 \
+            lib32-libglvnd \
+            lib32-libtheora \
+            lib32-libvorbis \
+            lib32-libwebp \
+            lib32-libxcursor \
+            lib32-libxi \
+            lib32-libxinerama \
+            lib32-libxrandr \
+            lib32-pcre2 \
+            lib32-alsa-lib \
+            lib32-pulseaudio \
+            lib32-glib2 \
+            pulse-native-provider \
+            libsquish \
+            graphite \
+            openxr \
+            miniupnpc \
+            cmake \
+            meson \
+            lib32-vulkan-icd-loader \
+            vulkan-headers
+          )
+
+          # core build deps and packages required. (ensure these are present)
+          pacman -S --noconfirm --needed base-devel git scons yasm setconf "${PKG32[@]}"
+
+      - name: Change package compression to -18 and disable debug in OPTIONS.
+        run: |
+          sed -i 's/^COMPRESSZST.*/COMPRESSZST=(zstd -c -18 -T0 --auto-threads=logical -)/' /etc/makepkg.conf
+          sed -i 's/^OPTIONS=.*/OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)/' /etc/makepkg.conf
+
+      - name: Create build user and set permissions
+        run: |
+          set -euxo pipefail
+          useradd -m builder || true
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          
+      - name: Install AUR dependencies.
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          AUR_DEPS=(
+          lib32-libsquish
+          lib32-graphite
+          lib32-jsoncpp
+          lib32-openxr
+          lib32-miniupnpc
+          )
+          for pkg in ${AUR_DEPS[@]}; do
+            su - builder -c "cd $GITHUB_WORKSPACE &&
+                            git clone 'https://aur.archlinux.org/${pkg}.git' &&
+                            cd ${pkg} &&
+                            makepkg --noconfirm --skippgpcheck"
+            cd $GITHUB_WORKSPACE/${pkg} &&
+            pacman -U --noconfirm ${pkg}*
+          done
+
+      - name: Build package as builder
+        run: |
+          set -euxo pipefail
+          su - builder -c "cd $GITHUB_WORKSPACE &&
+                          git clone 'https://aur.archlinux.org/godot32.git' &&
+                          cd godot32 &&
+                          sed -i '/^[[:space:]]*cflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
+                          sed -i '/^[[:space:]]*cxxflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
+                          sed -i "/^[[:space:]]*# Patch for miniupnpc/ i\    sed -i '/^[[:space:]]*env.Append(CCFLAGS=[\"-msse2\".*/ s/-msse2/-msse4.1/' SConstruct" PKGBUILD &&
+                          sed -i "/env.Append/ s|CCFLAGS=\[|CCFLAGS=\\\[|" PKGBUILD &&
+                          makepkg --noconfirm"
+
+      - name: Upload built package
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot32-sse41-gcc-pkg
+          path: "${{github.workspace}}/godot32/*.pkg.tar.zst"
