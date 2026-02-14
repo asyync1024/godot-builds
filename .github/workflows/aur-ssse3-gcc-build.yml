@@ -1,4 +1,4 @@
-name: Build Godot32 (AUR) (SSE3) (GCC)
+name: Build Godot32 (AUR) (SSSE3) (GCC)
 on: workflow_dispatch
 
 jobs:
@@ -96,7 +96,7 @@ jobs:
           cd "$GITHUB_WORKSPACE" &&
           git clone 'https://aur.archlinux.org/godot32.git' &&
           cd godot32 &&
-          sed -i "/^[[:space:]]*# Patch for miniupnpc/ i\    sed -i '/^[[:space:]]*env.Append(CCFLAGS=[\"-msse2\".*/ s/-msse2/-msse3/' SConstruct" PKGBUILD &&
+          sed -i "/^[[:space:]]*# Patch for miniupnpc/ i\    sed -i '/^[[:space:]]*env.Append(CCFLAGS=[\"-msse2\".*/ s/-msse2/-mssse3/' SConstruct" PKGBUILD &&
           sed -i "/env.Append/ s|CCFLAGS=\[|CCFLAGS=\\\[|" PKGBUILD &&
           makepkg --noconfirm
           EOF
@@ -109,5 +109,5 @@ jobs:
       - name: Upload built package
         uses: actions/upload-artifact@v4
         with:
-          name: godot32-sse3-gcc-pkg
+          name: godot32-ssse3-gcc-pkg
           path: "${{github.workspace}}/godot32/*.pkg.tar.zst"
