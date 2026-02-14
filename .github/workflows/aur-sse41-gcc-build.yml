@@ -90,14 +90,22 @@ jobs:
       - name: Build package as builder
         run: |
           set -euxo pipefail
-          su - builder -c "cd $GITHUB_WORKSPACE &&
-                          git clone 'https://aur.archlinux.org/godot32.git' &&
-                          cd godot32 &&
-                          sed -i '/^[[:space:]]*cflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
-                          sed -i '/^[[:space:]]*cxxflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
-                          sed -i "/^[[:space:]]*# Patch for miniupnpc/ i\    sed -i '/^[[:space:]]*env.Append(CCFLAGS=[\"-msse2\".*/ s/-msse2/-msse4.1/' SConstruct" PKGBUILD &&
-                          sed -i "/env.Append/ s|CCFLAGS=\[|CCFLAGS=\\\[|" PKGBUILD &&
-                          makepkg --noconfirm"
+          # Create a temporary script to work around shell quoting.
+          cat > patch_commands.sh <<'EOF'
+          cd "$GITHUB_WORKSPACE" &&
+          git clone 'https://aur.archlinux.org/godot32.git' &&
+          cd godot32 &&
+          sed -i '/^[[:space:]]*cflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
+          sed -i '/^[[:space:]]*cxxflags=.*/ s/"$/ -msse4.1"/' PKGBUILD &&
+          sed -i "/^[[:space:]]*# Patch for miniupnpc/ i\    sed -i '/^[[:space:]]*env.Append(CCFLAGS=[\"-msse2\".*/ s/-msse2/-msse4.1/' SConstruct" PKGBUILD &&
+          sed -i "/env.Append/ s|CCFLAGS=\[|CCFLAGS=\\\[|" PKGBUILD &&
+          makepkg --noconfirm
+          EOF
+
+          chmod +x patch_commands.sh
+
+          # Run as builder
+          su - builder -c "./patch_commands.sh"
 
       - name: Upload built package
         uses: actions/upload-artifact@v4
