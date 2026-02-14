@@ -90,6 +90,7 @@ jobs:
       - name: Build package as builder
         run: |
           set -euxo pipefail
+          cd "$GITHUB_WORKSPACE"
           # Create a temporary script to work around shell quoting.
           cat > patch_commands.sh <<'EOF'
           cd "$GITHUB_WORKSPACE" &&
@@ -105,7 +106,7 @@ jobs:
           chmod +x patch_commands.sh
 
           # Run as builder
-          su - builder -c "./patch_commands.sh"
+          su builder -c "$GITHUB_WORKSPACE/patch_commands.sh"
 
       - name: Upload built package
         uses: actions/upload-artifact@v4
