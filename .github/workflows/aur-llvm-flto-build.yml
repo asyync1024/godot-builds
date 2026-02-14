@@ -75,6 +75,7 @@ jobs:
           lib32-jsoncpp
           lib32-openxr
           lib32-miniupnpc
+          lib32-libsquish
           )
           for pkg in ${AUR_DEPS[@]}; do
             su - builder -c "cd $GITHUB_WORKSPACE &&
