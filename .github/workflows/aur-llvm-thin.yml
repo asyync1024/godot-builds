@@ -44,6 +44,7 @@ jobs:
             lib32-pulseaudio \
             lib32-glib2 \
             pulse-native-provider \
+            libwslay \
             libsquish \
             graphite \
             openxr \
@@ -72,6 +73,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           AUR_DEPS=(
+          lib32-libwslay
           lib32-libsquish
           lib32-graphite
           lib32-jsoncpp
