@@ -90,11 +90,11 @@ jobs:
             pacman -U --noconfirm ${pkg}*
           done
 
-      - name: Build package as builder and use -18 compression.
+      - name: Build package as builder and use -19 compression.
         run: |
           set -euxo pipefail
 
-          sed -i 's/^COMPRESSZST.*/COMPRESSZST=(zstd -c -18 -T0 --auto-threads=logical -)/' /etc/makepkg.conf
+          sed -i 's/^COMPRESSZST.*/COMPRESSZST=(zstd -c -19 -T0 --auto-threads=logical -)/' /etc/makepkg.conf
           cd "$GITHUB_WORKSPACE"
 
           # Create a temporary script to work around shell quoting.
