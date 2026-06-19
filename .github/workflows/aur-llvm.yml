@@ -104,7 +104,7 @@ jobs:
                           makepkg --noconfirm"
 
       - name: Upload built package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: godot32-llvm
           path: "${{github.workspace}}/godot32/*.pkg.tar.zst"

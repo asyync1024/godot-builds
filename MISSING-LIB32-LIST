@@ -4,4 +4,3 @@ Note that I was not able to find libspeechd usage in the PKGBUILD, so I didn't p
 
 !embree
 ?libspeechd
-!libwslay
