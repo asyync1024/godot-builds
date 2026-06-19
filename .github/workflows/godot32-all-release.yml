@@ -1,0 +1,59 @@
+# build-godot32-all.yml
+name: Build Godot32 (RELEASE, All)
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  gcc:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      artifact_name: godot32-gcc
+
+  llvm:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_llvm: true
+      artifact_name: godot32-llvm
+
+  ssse3-gcc:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_ssse3: true
+      artifact_name: godot32-ssse3-gcc
+
+  ssse3-llvm:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_llvm: true
+      use_ssse3: true
+      artifact_name: godot32-ssse3-llvm
+
+  release:
+    needs: [gcc, llvm, ssse3-gcc, ssse3-llvm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: pkgs
+          merge-multiple: true
+
+      - name: Get pkgver from filename
+        id: pkgver
+        run: |
+          FILE=$(ls pkgs/*.pkg.tar.zst | head -1)
+          TAG=$(basename "$FILE" | grep -oP '(?<=godot32-)\d+\.\d+-\d+')
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.pkgver.outputs.tag }}
+          name: godot32 ${{ steps.pkgver.outputs.tag }}
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
+          overwrite: true
+          files: pkgs/*.pkg.tar.zst
