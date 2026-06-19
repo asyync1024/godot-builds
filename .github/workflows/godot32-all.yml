@@ -1,0 +1,27 @@
+# build-godot32-all.yml
+name: Build Godot32 (All variants)
+on: workflow_dispatch
+jobs:
+  gcc:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      artifact_name: godot32-gcc
+
+  llvm:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_llvm: true
+      artifact_name: godot32-llvm
+
+  ssse3-gcc:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_ssse3: true
+      artifact_name: godot32-ssse3-gcc
+
+  ssse3-llvm:
+    uses: ./.github/workflows/_build-godot32.yml
+    with:
+      use_llvm: true
+      use_ssse3: true
+      artifact_name: godot32-ssse3-llvm
