@@ -81,11 +81,11 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           AUR_DEPS=(
+            lib32-miniupnpc
             lib32-libsquish
             lib32-graphite
             lib32-jsoncpp
             lib32-openxr
-            lib32-miniupnpc
           )
           for pkg in "${AUR_DEPS[@]}"; do
             su - builder -c "cd $GITHUB_WORKSPACE &&
