@@ -1,4 +1,5 @@
-name: Build Godot32 (RELEASE, All)on: workflow_dispatch
+name: Build Godot32 (RELEASE, All)
+on: workflow_dispatch
 permissions:
   contents: write
 
