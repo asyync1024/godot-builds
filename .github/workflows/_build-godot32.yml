@@ -133,10 +133,9 @@ jobs:
         run: |
           FILE=$(ls "$GITHUB_WORKSPACE"/godot32/*.pkg.tar.zst | head -1)
           DIR=$(dirname "$FILE")
-          BASE=$(basename "$FILE" .pkg.tar.zst)
           VARIANT=$(echo "${{ inputs.artifact_name }}" | sed 's/^godot32-//')
-          REST=$(echo "$BASE" | sed 's/^godot32-//')
-          mv "$FILE" "$DIR/godot32-${VARIANT}-${REST}.pkg.tar.zst"
+          NEWNAME=$(basename "$FILE" | sed "s/^godot32-/godot32-${VARIANT}-/")
+          mv "$FILE" "$DIR/$NEWNAME"
 
       - name: Upload built package
         uses: actions/upload-artifact@v7
