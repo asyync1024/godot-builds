@@ -1,7 +1,4 @@
-# build-godot32-all.yml
-name: Build Godot32 (RELEASE, All)
-on: workflow_dispatch
-
+name: Build Godot32 (RELEASE, All)on: workflow_dispatch
 permissions:
   contents: write
 
@@ -55,5 +52,5 @@ jobs:
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
-          overwrite: true
+          overwrite_files: true
           files: pkgs/*.pkg.tar.zst
